@@ -2,6 +2,8 @@
 
 namespace GoApptiv\TextLocal\Providers;
 
+use GoApptiv\TextLocal\Repositories\BaseRepositoryInterface;
+use GoApptiv\TextLocal\Repositories\MySql\MySqlBaseRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -14,6 +16,7 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         $toBind = [
+            BaseRepositoryInterface::class  => MySqlBaseRepository::class
         ];
 
         foreach ($toBind as $interface => $implementation) {

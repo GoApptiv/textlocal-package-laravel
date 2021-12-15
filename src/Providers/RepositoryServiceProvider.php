@@ -2,7 +2,9 @@
 
 namespace GoApptiv\TextLocal\Providers;
 
+use GoApptiv\TextLocal\Repositories\Account\AccountRepositoryInterface;
 use GoApptiv\TextLocal\Repositories\BaseRepositoryInterface;
+use GoApptiv\TextLocal\Repositories\MySql\Account\AccountRepository;
 use GoApptiv\TextLocal\Repositories\MySql\MySqlBaseRepository;
 use GoApptiv\TextLocal\Repositories\MySql\Sms\BulkSmsLogRepository;
 use GoApptiv\TextLocal\Repositories\MySql\Sms\SmsLogRepository;
@@ -21,6 +23,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $toBind = [
             BaseRepositoryInterface::class  => MySqlBaseRepository::class,
+            AccountRepositoryInterface::class => AccountRepository::class,
             SmsLogRepositoryInterface::class => SmsLogRepository::class,
             BulkSmsLogRepositoryInterface::class => BulkSmsLogRepository::class
         ];

@@ -91,9 +91,10 @@ class MySqlBaseRepository implements BaseRepositoryInterface
      */
     public function store(array $payload): ?Model
     {
-        $model = $this->model->create($payload);
+        $model = new $this->model($payload);
+        $model->save();
 
-        return $model->fresh();
+        return $model->refresh();
     }
 
     /**

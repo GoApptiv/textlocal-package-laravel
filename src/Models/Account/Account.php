@@ -3,6 +3,7 @@
 namespace GoApptiv\TextLocal\Models\Account;
 
 use GoApptiv\TextLocal\Models\BaseModel;
+use GoApptiv\TextLocal\Services\Crypto;
 
 /**
  *
@@ -36,4 +37,27 @@ class Account extends BaseModel
     protected $hidden = [
         'created_at', 'updated_at',
     ];
+
+
+    /**
+     * Set api_key.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setApiKeyAttribute($value)
+    {
+        $this->attributes['api_key'] = Crypto::encrypt($value);
+    }
+
+    /**
+     * Get api_key.
+     *
+     * @param string $value
+     * @return string
+     */
+    public function getApiKeyAttribute($value)
+    {
+        return $value ? Crypto::decrypt($value) : null;
+    }
 }

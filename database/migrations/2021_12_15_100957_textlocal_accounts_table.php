@@ -16,7 +16,7 @@ class TextlocalAccountsTable extends Migration
         Schema::create('textlocal_accounts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('email');
+            $table->string('email')->unique();
             $table->string('api_key');
             $table->timestamps();
         });

@@ -1,0 +1,25 @@
+{
+    "name": "goapptiv/textlocal",
+    "description": "Laravel Text local package",
+    "authors": [
+        {
+            "name": "Sagar Vaghela",
+            "email": "sagar.vaghela@goapptiv.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "GoApptiv\\TextLocal\\": "src/"
+        }
+    },
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GoApptiv\\TextLocal\\Providers\\TextLocalServiceProvider",
+                "GoApptiv\\TextLocal\\Providers\\RepositoryServiceProvider"
+            ]
+        }
+    }
+}

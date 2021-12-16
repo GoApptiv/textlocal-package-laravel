@@ -35,40 +35,40 @@ class SmsLogRepository extends MySqlBaseRepository implements SmsLogRepositoryIn
     }
 
     /**
-     * Update Status by Bulk Id
+     * Update Status by Batch Id
      *
-     * @param int $bulkId
+     * @param int $batchId
      * @param string $status
      */
-    public function updateStatusByBulkId(int $bulkId, string $status): int
+    public function updateStatusByBatchId(int $batchId, string $status): int
     {
-        return SmsLog::with([])->where(['bulk_id' => $bulkId])->update(['status' => $status]);
+        return SmsLog::with([])->where(['batch_id' => $batchId])->update(['status' => $status]);
     }
 
     /**
-     * Update by Bulk Id and Mobile
+     * Update by Batch Id and Mobile
      *
-     * @param int $bulkId
+     * @param int $batchId
      * @param string $mobile
      * @param array $payload
      * @return int
      */
-    public function updateByBulkIdAndMobile(int $bulkId, string $mobile, array $payload): int
+    public function updateByBatchIdAndMobile(int $batchId, string $mobile, array $payload): int
     {
-        $model = SmsLog::with([])->where(["bulk_id" => $bulkId, "mobile" => $mobile]);
+        $model = SmsLog::with([])->where(["batch_id" => $batchId, "mobile" => $mobile]);
         return $model->update($payload);
     }
 
     /**
-     * Update by Bulk Id Where textlocal_id is null
+     * Update by Batch Id Where textlocal_id is null
      *
-     * @param int $bulkId
+     * @param int $batchId
      * @param array $payload
      * @return int
      */
-    public function updateByBulkIdWhereTextLocalIdIsNull(int $bulkId, array $payload): int
+    public function updateByBatchIdWhereTextLocalIdIsNull(int $batchId, array $payload): int
     {
-        $model = SmsLog::with([])->where(["bulk_id" => $bulkId, "textlocal_id" => null]);
+        $model = SmsLog::with([])->where(["batch_id" => $batchId, "textlocal_id" => null]);
         return $model->update($payload);
     }
 }

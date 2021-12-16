@@ -2,11 +2,11 @@
 
 namespace GoApptiv\TextLocal\Repositories\MySql\Sms;
 
-use GoApptiv\TextLocal\Models\Sms\BulkSmsLog;
-use GoApptiv\TextLocal\Repositories\Sms\BulkSmsLogRepositoryInterface;
+use GoApptiv\TextLocal\Models\Sms\SmsBatchLog;
 use GoApptiv\TextLocal\Repositories\MySql\MySqlBaseRepository;
+use GoApptiv\TextLocal\Repositories\Sms\SmsBatchLogRepositoryInterface;
 
-class BulkSmsLogRepository extends MySqlBaseRepository implements BulkSmsLogRepositoryInterface
+class SmsBatchLogRepository extends MySqlBaseRepository implements SmsBatchLogRepositoryInterface
 {
     /**
      * @var Model
@@ -18,7 +18,7 @@ class BulkSmsLogRepository extends MySqlBaseRepository implements BulkSmsLogRepo
      *
      * @param Model $model
      */
-    public function __construct(BulkSmsLog $model)
+    public function __construct(SmsBatchLog $model)
     {
         $this->model = $model;
     }

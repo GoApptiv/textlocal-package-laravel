@@ -12,7 +12,7 @@ use GoApptiv\TextLocal\Models\BaseModel;
  * @property string $mobile - Mobile number
  * @property string $sender - Sender Id for the SMS
  * @property string $status - Status of the SMS
- * @property int $bulk_id - Bulk Id if the message is in bulk
+ * @property int $batch_id - Batch Id if the message is in Batch
  * @property string $comment - Comment or error
  *
  **/

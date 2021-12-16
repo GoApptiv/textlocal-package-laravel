@@ -28,8 +28,8 @@ class TextlocalSmsLogsTable extends Migration
             $table->enum('status', Constants::$statuses)->default(Constants::$PENDING);
 
             // Bulk SMS Relation
-            $table->bigInteger('bulk_id')->unsigned();
-            $table->foreign('bulk_id')->references('id')->on('textlocal_bulk_sms_logs');
+            $table->bigInteger('batch_id')->unsigned();
+            $table->foreign('batch_id')->references('id')->on('textlocal_sms_batch_logs');
 
             $table->string('comment')->nullable();
 

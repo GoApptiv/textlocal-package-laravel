@@ -5,10 +5,9 @@ namespace GoApptiv\TextLocal\Services\TextLocal;
 use Exception;
 use GoApptiv\TextLocal\Bo\Sms\TextLocalSms;
 use GoApptiv\TextLocal\Exception\InvalidAccountDetailsException;
-use GoApptiv\TextLocal\Exception\InvalidMobileNumberException;
-use GoApptiv\TextLocal\Models\Sms\BulkSmsLog;
+use GoApptiv\TextLocal\Models\Sms\SmsBatchLog;
 use GoApptiv\TextLocal\Repositories\Account\AccountRepositoryInterface;
-use GoApptiv\TextLocal\Repositories\Sms\BulkSmsLogRepositoryInterface;
+use GoApptiv\TextLocal\Repositories\Sms\SmsBatchLogRepositoryInterface;
 use GoApptiv\TextLocal\Repositories\Sms\SmsLogRepositoryInterface;
 use GoApptiv\TextLocal\Resources\TextLocalErrorSmsResource;
 use GoApptiv\TextLocal\Resources\TextLocalSuccessSmsResource;
@@ -27,8 +26,8 @@ class TextLocalService
     /** @var SmsLogRepositoryInterface */
     private $smsLogRepository;
 
-    /** @var BulkSmsLogRepositoryInterface */
-    private $bulkSmsLogRepository;
+    /** @var SmsBatchLogRepositoryInterface */
+    private $smsBatchLogRepository;
 
 
     /**
@@ -36,17 +35,17 @@ class TextLocalService
      *
      * @param AccountRepositoryInterface $accountRepository
      * @param SmsLogRepositoryInterface $smsLogRepository
-     * @param BulkSmsLogRepositoryInterface $bulkSmsLogRepository
+     * @param SmsBatchLogRepositoryInterface $smsBatchLogRepository
      *
      */
     public function __construct(
         AccountRepositoryInterface $accountRepository,
         SmsLogRepositoryInterface $smsLogRepository,
-        BulkSmsLogRepositoryInterface $bulkSmsLogRepository
+        SmsBatchLogRepositoryInterface $smsBatchLogRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->smsLogRepository = $smsLogRepository;
-        $this->bulkSmsLogRepository = $bulkSmsLogRepository;
+        $this->smsBatchLogRepository = $smsBatchLogRepository;
     }
 
     /**
@@ -126,7 +125,7 @@ class TextLocalService
         $apiKey = urlencode($account->api_key);
         $sender = urlencode($data->getSender());
 
-        $requestData = 'apikey=' . $apiKey . '&numbers=' . $numbers . "&sender=" . $sender . "&message=" . $message;
+        $requestData = 'apikey=' . $apiKey . '&numbers=' . $numbers . "&sender=" . $sender . "&message=" . $message . "&test=true";
         $client = $this->getClient();
 
         $response = $client->request(
@@ -135,7 +134,7 @@ class TextLocalService
         );
 
         // Mark as Dispatched
-        $this->markSmsAsDispatchedByBulkId($batch->id);
+        $this->markSmsAsDispatchedByBatchId($batch->id);
 
         $responseJson = json_decode($response->getBody()->getContents(), true);
 
@@ -154,11 +153,11 @@ class TextLocalService
      * @param int $accountId
      * @param int $total
      *
-     * @return BulkSmsLog
+     * @return SmsBatchLog
      */
-    private function registerBulkSmsBatch(int $accountId, int $total): BulkSmsLog
+    private function registerBulkSmsBatch(int $accountId, int $total): SmsBatchLog
     {
-        return $this->bulkSmsLogRepository->store(collect([
+        return $this->smsBatchLogRepository->store(collect([
             "account_id" => $accountId,
             "total" => $total,
             "status" => Constants::$PENDING
@@ -172,11 +171,11 @@ class TextLocalService
      * @param string $mobile
      * @param string $message
      * @param string $sender
-     * @param int $bulkId
+     * @param int $batchId
      *
      * @return array
      */
-    private function generateSmsRegistrationData(int $accountId, string $mobile, string $message, string $sender, int $bulkId): array
+    private function generateSmsRegistrationData(int $accountId, string $mobile, string $message, string $sender, int $batchId): array
     {
         $now = now();
         return [
@@ -184,34 +183,34 @@ class TextLocalService
             "mobile" => $mobile,
             "message" => Crypto::encrypt($message),
             "sender" => $sender,
-            "bulk_id" => $bulkId,
+            "batch_id" => $batchId,
             "created_at" => $now,
             "updated_at" => $now
         ];
     }
 
     /**
-     * Mark SMS as Dispatched by Bulk ID
+     * Mark SMS as Dispatched by Batch ID
      *
-     * @param int $bulkId
+     * @param int $batchId
      * @return bool
      */
-    private function markSmsAsDispatchedByBulkId(int $bulkId): bool
+    private function markSmsAsDispatchedByBatchId(int $batchId): bool
     {
-        $bulkLog = $this->bulkSmsLogRepository->update($bulkId, ['status' => Constants::$DISPATCHED]);
-        $smsLog = $this->smsLogRepository->updateStatusByBulkId($bulkId, Constants::$DISPATCHED);
-        return ($bulkLog & $smsLog);
+        $batchLog = $this->smsBatchLogRepository->update($batchId, ['status' => Constants::$DISPATCHED]);
+        $smsLog = $this->smsLogRepository->updateStatusByBatchId($batchId, Constants::$DISPATCHED);
+        return ($batchLog & $smsLog);
     }
 
     /**
      * On SMS Success Response
      *
      * @param array $response
-     * @param int $bulkId
+     * @param int $batchId
      * @param Collection $mobileNumbers
      * @return void
      */
-    private function onSmsSuccessResponse(array $response, int $bulkId, Collection $mobileNumbers): void
+    private function onSmsSuccessResponse(array $response, int $batchId, Collection $mobileNumbers): void
     {
         if (array_key_exists('messages', $response)) {
             // Update Bulk Log
@@ -220,7 +219,7 @@ class TextLocalService
                 "delivered" => count($response['messages']),
                 "status" => Constants::$SUCCESS,
             ];
-            $this->bulkSmsLogRepository->update($bulkId, $bulkUpdateData);
+            $this->smsBatchLogRepository->update($batchId, $bulkUpdateData);
 
             // Update Log
             foreach ($response['messages'] as $message) {
@@ -229,12 +228,12 @@ class TextLocalService
 
                 foreach ($mobileNumbers as $requestMobileNumber) {
                     if (str_contains($mobileNumber, $requestMobileNumber)) {
-                        $this->smsLogRepository->updateByBulkIdAndMobile($bulkId, $requestMobileNumber, ["status" => Constants::$SUCCESS, "textlocal_id" => $id]);
+                        $this->smsLogRepository->updateByBatchIdAndMobile($batchId, $requestMobileNumber, ["status" => Constants::$SUCCESS, "textlocal_id" => $id]);
                     }
                 }
 
                 // Mark Rest as failed
-                $this->smsLogRepository->updateByBulkIdWhereTextLocalIdIsNull($bulkId, ["status" => Constants::$FAILED, "comment" => "No Status received from TextLocal"]);
+                $this->smsLogRepository->updateByBatchIdWhereTextLocalIdIsNull($batchId, ["status" => Constants::$FAILED, "comment" => "No Status received from TextLocal"]);
             }
         }
     }
@@ -243,10 +242,10 @@ class TextLocalService
      * On Sms Failure Response
      *
      * @param array $response
-     * @param int $bulkId
+     * @param int $batchId
      * @return void
      */
-    private function onSmsFailureResponse(array $response, int $bulkId): void
+    private function onSmsFailureResponse(array $response, int $batchId): void
     {
         $comment = "";
 
@@ -268,10 +267,10 @@ class TextLocalService
             "status" => Constants::$FAILED,
             "comment" => $comment
             ];
-        $this->bulkSmsLogRepository->update($bulkId, $bulkUpdateData);
+        $this->smsBatchLogRepository->update($batchId, $bulkUpdateData);
 
         // Update Sms Log
-        $this->smsLogRepository->updateByBulkIdWhereTextLocalIdIsNull($bulkId, ["status" => Constants::$FAILED, "comment" => $comment]);
+        $this->smsLogRepository->updateByBatchIdWhereTextLocalIdIsNull($batchId, ["status" => Constants::$FAILED, "comment" => $comment]);
     }
 
 

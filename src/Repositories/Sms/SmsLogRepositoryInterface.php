@@ -15,30 +15,30 @@ interface SmsLogRepositoryInterface extends BaseRepositoryInterface
     public function bulkStore(array $payload): bool;
 
     /**
-     * Update Status by Bulk Id
+     * Update Status by Batch Id
      *
-     * @param int $bulkId
+     * @param int $batchId
      * @param string $status
      * @return int
      */
-    public function updateStatusByBulkId(int $bulkId, string $status): int;
+    public function updateStatusByBatchId(int $batchId, string $status): int;
 
     /**
-     * Update by Bulk Id and Mobile
+     * Update by Batch Id and Mobile
      *
-     * @param int $bulkId
+     * @param int $batchId
      * @param string $mobile
      * @param array $payload
      * @return int
      */
-    public function updateByBulkIdAndMobile(int $bulkId, string $mobile, array $payload): int;
+    public function updateByBatchIdAndMobile(int $batchId, string $mobile, array $payload): int;
 
     /**
-     * Update by Bulk Id Where textlocal_id is null
+     * Update by Batch Id Where textlocal_id is null
      *
-     * @param int $bulkId
+     * @param int $batchId
      * @param array $payload
      * @return int
      */
-    public function updateByBulkIdWhereTextLocalIdIsNull(int $bulkId, array $payload): int;
+    public function updateByBatchIdWhereTextLocalIdIsNull(int $batchId, array $payload): int;
 }

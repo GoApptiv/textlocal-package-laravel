@@ -5,7 +5,7 @@ namespace GoApptiv\TextLocal\Providers;
 use GoApptiv\TextLocal\Console\Commands\AddAccountCommand;
 use GoApptiv\TextLocal\Console\Commands\ReplaceApiKeyCommand;
 use GoApptiv\TextLocal\Repositories\Account\AccountRepositoryInterface;
-use GoApptiv\TextLocal\Repositories\Sms\BulkSmsLogRepositoryInterface;
+use GoApptiv\TextLocal\Repositories\Sms\SmsBatchLogRepositoryInterface;
 use GoApptiv\TextLocal\Repositories\Sms\SmsLogRepositoryInterface;
 use GoApptiv\TextLocal\Services\TextLocal\TextLocalService;
 use Illuminate\Support\ServiceProvider;
@@ -36,7 +36,7 @@ class TextLocalServiceProvider extends ServiceProvider
             return new TextLocalService(
                 $app->make(AccountRepositoryInterface::class),
                 $app->make(SmsLogRepositoryInterface::class),
-                $app->make(BulkSmsLogRepositoryInterface::class),
+                $app->make(SmsBatchLogRepositoryInterface::class),
             );
         });
     }

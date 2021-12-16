@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class TextlocalBulkSmsLogsTable extends Migration
+class TextlocalSmsBatchLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class TextlocalBulkSmsLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('textlocal_bulk_sms_logs', function (Blueprint $table) {
+        Schema::create('textlocal_sms_batch_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             // Account Relation
@@ -38,6 +38,6 @@ class TextlocalBulkSmsLogsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('textlocal_sms_batch_logs');
     }
 }

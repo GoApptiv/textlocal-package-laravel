@@ -15,14 +15,14 @@ use GoApptiv\TextLocal\Models\BaseModel;
  * @property string $comment - Comment or error
  *
  **/
-class BulkSmsLog extends BaseModel
+class SmsBatchLog extends BaseModel
 {
     /**
      * Table name
      *
      * @var string
      */
-    protected $table = 'textlocal_bulk_sms_logs';
+    protected $table = 'textlocal_sms_batch_logs';
 
     /**
      * The attributes that are not mass assignable.

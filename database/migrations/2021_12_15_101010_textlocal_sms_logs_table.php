@@ -21,6 +21,7 @@ class TextlocalSmsLogsTable extends Migration
             $table->bigInteger('account_id')->unsigned();
             $table->foreign('account_id')->references('id')->on('textlocal_accounts');
 
+            $table->string('textlocal_id')->nullable();
             $table->string('mobile');
             $table->string('message');
             $table->string('sender');
@@ -28,7 +29,7 @@ class TextlocalSmsLogsTable extends Migration
 
             // Bulk SMS Relation
             $table->bigInteger('bulk_id')->unsigned();
-            $table->foreign('bulk_id')->references('id')->on('textlocal_accounts');
+            $table->foreign('bulk_id')->references('id')->on('textlocal_bulk_sms_logs');
 
             $table->string('comment')->nullable();
 

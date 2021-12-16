@@ -10,7 +10,7 @@ class Crypto
      * @param string $string
      * @return string
      */
-    public static function encrypt($string)
+    public static function encrypt($string): string
     {
         $ciphering = "AES-128-CTR";
         $options = 0;
@@ -32,7 +32,7 @@ class Crypto
      * @param string $string
      * @return string
      */
-    public static function decrypt($encryption)
+    public static function decrypt($encryption): string
     {
         $ciphering = "AES-128-CTR";
         $options = 0;

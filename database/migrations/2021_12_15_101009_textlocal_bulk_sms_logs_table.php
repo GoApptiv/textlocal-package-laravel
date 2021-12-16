@@ -21,9 +21,9 @@ class TextlocalBulkSmsLogsTable extends Migration
             $table->bigInteger('account_id')->unsigned();
             $table->foreign('account_id')->references('id')->on('textlocal_accounts');
 
-            $table->integer('total');
-            $table->integer('delivered')->nullable();
-            $table->integer('failed')->nullable();
+            $table->string('textlocal_batch_id')->nullable();
+            $table->integer('total')->default(0);
+            $table->integer('delivered')->nullable()->default(0);
             $table->enum('status', Constants::$statuses)->default(Constants::$PENDING);
             $table->string('comment')->nullable();
 

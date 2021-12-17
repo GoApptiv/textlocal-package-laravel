@@ -5,9 +5,8 @@ namespace GoApptiv\TextLocal\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- *
- * // TODO:: Update the static methods
- * @method static GoApptiv\PinePerks\Service\PinePerksService getAccountId(string $userName)
+ * @method static GoApptiv\TextLocal\Service\TextLocalService sendSMS(TextLocalSms $data, int $accountId)
+ * @method static GoApptiv\TextLocal\Service\TextLocalService sendBulkSms(TextLocalBulkSms $data, int $accountId)
  */
 class TextLocal extends Facade
 {

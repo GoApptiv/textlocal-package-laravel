@@ -5,6 +5,7 @@ namespace GoApptiv\TextLocal\Bo\Sms;
 class TextLocalMessage
 {
     private $mobileNumber;
+    private $referenceId;
     private $message;
 
     /**
@@ -12,13 +13,15 @@ class TextLocalMessage
      * Message BO
      *
      * @param string $mobileNumber Mobile number
-     * @param string $message Message
+     * @param string $referenceId Unique Reference Id to track the message
+    * @param string $message Message - Only for Bulk Message
      *
      */
-    public function __construct(string $mobileNumber, string $message)
+    public function __construct(string $mobileNumber, string $referenceId, string $message = null)
     {
         $this->mobileNumber = $mobileNumber;
         $this->message = $message;
+        $this->referenceId = $referenceId;
     }
 
     /**
@@ -37,6 +40,26 @@ class TextLocalMessage
     public function setMobileNumber($mobileNumber)
     {
         $this->mobileNumber = $mobileNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of referenceId
+     */
+    public function getReferenceId()
+    {
+        return $this->referenceId;
+    }
+
+    /**
+     * Set the value of referenceId
+     *
+     * @return  self
+     */
+    public function setReferenceId($referenceId)
+    {
+        $this->referenceId = $referenceId;
 
         return $this;
     }

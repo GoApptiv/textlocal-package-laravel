@@ -16,6 +16,7 @@ class TextlocalSmsLogsTable extends Migration
     {
         Schema::create('textlocal_sms_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('reference_id')->unique();
 
             // Account Relation
             $table->bigInteger('account_id')->unsigned();

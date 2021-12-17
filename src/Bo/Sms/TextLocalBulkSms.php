@@ -13,7 +13,7 @@ class TextLocalBulkSms
      *
      * Bulk SMS BO
      *
-     * @param Collection $textLocalMessages Collection of TextLocalMessagesObject
+     * @param Collection $textLocalMessages Collection of TextLocalMessages Object
      * @param string $sender Sender Id
      *
      */

@@ -28,7 +28,6 @@ class TextLocalService
     /** @var SmsBatchLogRepositoryInterface */
     private $smsBatchLogRepository;
 
-
     /**
      * Constructor
      *
@@ -108,9 +107,11 @@ class TextLocalService
         $batch = $this->registerBulkSmsBatch($accountId, $data->getMobileNumbers()->count());
         $smsStoreData = collect([]);
 
+        $mobileNumbers = collect([]);
         // Generate SMS Log Data
-        foreach ($data->getMobileNumbers() as $mobile) {
-            $smsStoreData->push($this->generateSmsRegistrationData($accountId, $mobile, $data->getMessage(), $data->getSender(), $batch->id));
+        foreach ($data->getMobileNumbers() as $mobileNumberData) {
+            $mobileNumbers->push($mobileNumberData->getMobileNumber());
+            $smsStoreData->push($this->generateSmsRegistrationData($mobileNumberData->getReferenceId(), $accountId, $mobileNumberData->getMobileNumber(), $data->getMessage(), $data->getSender(), $batch->id));
         }
 
         // Register SMS Log
@@ -118,7 +119,7 @@ class TextLocalService
 
         // Encode Data
         $message = urlencode($data->getMessage());
-        $numbers = rawurlencode($data->getMobileNumbers()->unique()->join(","));
+        $numbers = rawurlencode($mobileNumbers->unique()->join(","));
         $apiKey = urlencode($account->api_key);
         $sender = urlencode($data->getSender());
 
@@ -168,7 +169,7 @@ class TextLocalService
                     "text" => rawurlencode($requestMessage->getMessage()),
                 ]
             );
-            $smsStoreData->push($this->generateSmsRegistrationData($accountId, $requestMessage->getMobileNumber(), $requestMessage->getMessage(), $data->getSender(), $batch->id));
+            $smsStoreData->push($this->generateSmsRegistrationData($requestMessage->getReferenceId(), $accountId, $requestMessage->getMobileNumber(), $requestMessage->getMessage(), $data->getSender(), $batch->id));
         }
 
         // Register SMS Log
@@ -212,6 +213,7 @@ class TextLocalService
     /**
      * Generate SMS Registration Data
      *
+     * @param string $referenceId
      * @param int $accountId
      * @param string $mobile
      * @param string $message
@@ -220,11 +222,12 @@ class TextLocalService
      *
      * @return array
      */
-    private function generateSmsRegistrationData(int $accountId, string $mobile, string $message, string $sender, int $batchId): array
+    private function generateSmsRegistrationData(string $referenceId, int $accountId, string $mobile, string $message, string $sender, int $batchId): array
     {
         $now = now();
         return [
             "account_id" => $accountId,
+            "reference_id" => $referenceId,
             "mobile" => $mobile,
             "message" => Crypto::encrypt($message),
             "sender" => $sender,
@@ -270,12 +273,12 @@ class TextLocalService
                 $mobileNumber = $message['recipient'];
 
                 foreach ($mobileNumbers as $requestMobileNumber) {
-                    if (str_contains($mobileNumber, $requestMobileNumber)) {
-                        $this->smsLogRepository->updateByBatchIdAndMobile($batchId, $requestMobileNumber, ["status" => Constants::$SUCCESS]);
+                    if (str_contains($mobileNumber, $requestMobileNumber->getMobileNumber())) {
+                        $this->smsLogRepository->updateByBatchIdAndMobile($batchId, $requestMobileNumber->getMobileNumber(), ["status" => Constants::$SUCCESS]);
                     }
                 }
 
-                // Mark Rest as failed
+                // Mark Dispatched as failed
                 $this->smsLogRepository->updateByBatchIdAndStatus($batchId, Constants::$DISPATCHED, ["status" => Constants::$FAILED, "comment" => "No Status received from TextLocal"]);
             }
         }

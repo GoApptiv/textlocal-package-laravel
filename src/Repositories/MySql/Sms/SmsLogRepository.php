@@ -60,6 +60,21 @@ class SmsLogRepository extends MySqlBaseRepository implements SmsLogRepositoryIn
     }
 
     /**
+     * Update by Batch Id, Mobile And Message
+     *
+     * @param int $batchId
+     * @param string $mobile
+     * @param string $message
+     * @param array $payload
+     * @return int
+     */
+    public function updateByBatchIdAndMobileAndMessage(int $batchId, string $mobile, string $message, array $payload): int
+    {
+        $model = SmsLog::with([])->where(["batch_id" => $batchId, "mobile" => $mobile, "message" => $message]);
+        return $model->update($payload);
+    }
+
+    /**
      * Update by Batch Id Where textlocal_id is null
      *
      * @param int $batchId
@@ -69,6 +84,20 @@ class SmsLogRepository extends MySqlBaseRepository implements SmsLogRepositoryIn
     public function updateByBatchIdWhereTextLocalIdIsNull(int $batchId, array $payload): int
     {
         $model = SmsLog::with([])->where(["batch_id" => $batchId, "textlocal_id" => null]);
+        return $model->update($payload);
+    }
+
+    /**
+     * Update by Batch Id And Status
+     *
+     * @param int $batchId
+     * @param string $status
+     * @param array $payload
+     * @return int
+     */
+    public function updateByBatchIdAndStatus(int $batchId, string $status, array $payload): int
+    {
+        $model = SmsLog::with([])->where(["batch_id" => $batchId, "status" => $status]);
         return $model->update($payload);
     }
 }

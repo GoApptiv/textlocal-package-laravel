@@ -34,6 +34,17 @@ interface SmsLogRepositoryInterface extends BaseRepositoryInterface
     public function updateByBatchIdAndMobile(int $batchId, string $mobile, array $payload): int;
 
     /**
+     * Update by Batch Id, Mobile And Message
+     *
+     * @param int $batchId
+     * @param string $mobile
+     * @param string $message
+     * @param array $payload
+     * @return int
+     */
+    public function updateByBatchIdAndMobileAndMessage(int $batchId, string $mobile, string $message, array $payload): int;
+
+    /**
      * Update by Batch Id Where textlocal_id is null
      *
      * @param int $batchId
@@ -41,4 +52,14 @@ interface SmsLogRepositoryInterface extends BaseRepositoryInterface
      * @return int
      */
     public function updateByBatchIdWhereTextLocalIdIsNull(int $batchId, array $payload): int;
+
+    /**
+     * Update by Batch Id And Status
+     *
+     * @param int $batchId
+     * @param string $status
+     * @param array $payload
+     * @return int
+     */
+    public function updateByBatchIdAndStatus(int $batchId, string $status, array $payload): int;
 }

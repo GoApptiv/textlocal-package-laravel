@@ -13,7 +13,8 @@ class TextLocalSms
     /**
      *
      * SMS BO
-     * @param Collection $mobileNumbers Mobile number
+     *
+     * @param Collection $mobileNumbers Collection of Mobile numbers
      * @param string $sender Sender Id
      * @param string $message Message
      *

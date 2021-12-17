@@ -260,7 +260,6 @@ class TextLocalService
         if (array_key_exists('messages', $response)) {
             // Update Bulk Log
             $bulkUpdateData = [
-                "textlocal_batch_id" => $response['batch_id'],
                 "delivered" => count($response['messages']),
                 "status" => Constants::$SUCCESS,
             ];

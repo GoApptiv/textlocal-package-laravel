@@ -8,7 +8,6 @@ use GoApptiv\TextLocal\Models\BaseModel;
  *
  * @property int $id - Id of the Bulk Message
  * @property int $account_id - Account id from the textlocal_accounts table
- * @property string $textlocal_batch_id - Textlocal Batch Id
  * @property int $total - Total messages in the bulk
  * @property int $delivered - Total delivered message
  * @property string $status - Status of the Bulk Batch

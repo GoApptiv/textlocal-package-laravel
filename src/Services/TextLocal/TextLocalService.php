@@ -268,16 +268,15 @@ class TextLocalService
             // Update Log
             foreach ($response['messages'] as $message) {
                 $mobileNumber = $message['recipient'];
-                $id = $message['id'];
 
                 foreach ($mobileNumbers as $requestMobileNumber) {
                     if (str_contains($mobileNumber, $requestMobileNumber)) {
-                        $this->smsLogRepository->updateByBatchIdAndMobile($batchId, $requestMobileNumber, ["status" => Constants::$SUCCESS, "textlocal_id" => $id]);
+                        $this->smsLogRepository->updateByBatchIdAndMobile($batchId, $requestMobileNumber, ["status" => Constants::$SUCCESS]);
                     }
                 }
 
                 // Mark Rest as failed
-                $this->smsLogRepository->updateByBatchIdWhereTextLocalIdIsNull($batchId, ["status" => Constants::$FAILED, "comment" => "No Status received from TextLocal"]);
+                $this->smsLogRepository->updateByBatchIdAndStatus($batchId, Constants::$DISPATCHED, ["status" => Constants::$FAILED, "comment" => "No Status received from TextLocal"]);
             }
         }
     }
@@ -314,7 +313,7 @@ class TextLocalService
         $this->smsBatchLogRepository->update($batchId, $bulkUpdateData);
 
         // Update Sms Log
-        $this->smsLogRepository->updateByBatchIdWhereTextLocalIdIsNull($batchId, ["status" => Constants::$FAILED, "comment" => $comment]);
+        $this->smsLogRepository->updateByBatchIdAndStatus($batchId, Constants::$DISPATCHED, ["status" => Constants::$FAILED, "comment" => $comment]);
     }
 
     /**

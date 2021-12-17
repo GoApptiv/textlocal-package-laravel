@@ -8,7 +8,6 @@ use GoApptiv\TextLocal\Models\BaseModel;
  *
  * @property int $id - Id of the Message
  * @property int $account_id - Account id from the textlocal_accounts table
- * @property int $textlocal_id - Textlocal Id
  * @property string $mobile - Mobile number
  * @property string $sender - Sender Id for the SMS
  * @property string $status - Status of the SMS

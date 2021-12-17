@@ -21,7 +21,6 @@ class TextlocalSmsLogsTable extends Migration
             $table->bigInteger('account_id')->unsigned();
             $table->foreign('account_id')->references('id')->on('textlocal_accounts');
 
-            $table->string('textlocal_id')->nullable();
             $table->string('mobile');
             $table->string('message');
             $table->string('sender');

@@ -11,6 +11,7 @@ use GoApptiv\TextLocal\Models\BaseModel;
  * @property int $total - Total messages in the bulk
  * @property int $delivered - Total delivered message
  * @property string $status - Status of the Bulk Batch
+ * @property DateTime $scheduled_datetime - Message Scheduled Date Time
  * @property string $comment - Comment or error
  *
  **/

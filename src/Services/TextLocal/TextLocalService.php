@@ -2,6 +2,7 @@
 
 namespace GoApptiv\TextLocal\Services\TextLocal;
 
+use Carbon\Carbon;
 use Exception;
 use GoApptiv\TextLocal\Bo\Sms\TextLocalBulkSms;
 use GoApptiv\TextLocal\Bo\Sms\TextLocalSms;
@@ -15,6 +16,7 @@ use GoApptiv\TextLocal\Services\Crypto;
 use GoApptiv\TextLocal\Services\Endpoints;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TextLocalService
@@ -90,10 +92,11 @@ class TextLocalService
      *
      * @param Collection $mobileNumbers
      * @param int $accountId
+     * @param Carbon $scheduledDateTime
      *
      * @return array
      */
-    public function sendSMS(TextLocalSms $data, int $accountId): array
+    public function sendSMS(TextLocalSms $data, int $accountId, Carbon $scheduledDateTime = null): array
     {
         Log::info("SENDING SMS USING SENDER " . $data->getSender() . " AND ACCOUNT ID " . $accountId);
 
@@ -104,7 +107,7 @@ class TextLocalService
         }
 
         // Register Batch
-        $batch = $this->registerBulkSmsBatch($accountId, $data->getMobileNumbers()->count());
+        $batch = $this->registerBulkSmsBatch($accountId, $data->getMobileNumbers()->count(), $scheduledDateTime);
         $smsStoreData = collect([]);
 
         $mobileNumbers = collect([]);
@@ -123,7 +126,8 @@ class TextLocalService
         $apiKey = urlencode($account->api_key);
         $sender = urlencode($data->getSender());
 
-        $requestData = 'apikey=' . $apiKey . '&numbers=' . $numbers . "&sender=" . $sender . "&message=" . $message . "&test=true";
+        $requestData = 'apikey=' . $apiKey . '&numbers=' . $numbers . "&sender=" . $sender . "&message=" . $message . '&schedule_time=' . $scheduledDateTime ?? $scheduledDateTime->unix();
+
         $responseJson = $this->makeGetRequest(env('TEXTLOCAL_API') . Endpoints::$SMS . '?' . $requestData);
 
         // Mark as Dispatched
@@ -143,10 +147,11 @@ class TextLocalService
      *
      * @param TextLocalBulkSms $data
      * @param int $accountId
+     * @param Carbon $scheduledDateTime
      *
      * @return array
      */
-    public function sendBulkSms(TextLocalBulkSms $data, int $accountId): array
+    public function sendBulkSms(TextLocalBulkSms $data, int $accountId, Carbon $scheduledDateTime = null): array
     {
         Log::info("SENDING BULK SMS USING ACCOUNT ID " . $accountId);
 
@@ -158,7 +163,7 @@ class TextLocalService
         }
 
         // Register Batch
-        $batch = $this->registerBulkSmsBatch($accountId, $data->getTextLocalMessages()->count());
+        $batch = $this->registerBulkSmsBatch($accountId, $data->getTextLocalMessages()->count(), $scheduledDateTime);
 
         $messages = collect([]);
         $smsStoreData = collect([]);
@@ -176,7 +181,8 @@ class TextLocalService
         $this->smsLogRepository->bulkStore($smsStoreData->toArray());
 
         $requestData = [
-            "messages" => $messages->toArray()
+            "messages" => $messages->toArray(),
+            "scheduled" => $scheduledDateTime !== null ? $scheduledDateTime->unix() : ""
         ];
         $responseJson = $this->makeGetRequest(env("TEXTLOCAL_API") . Endpoints::$BULK_SMS . '?' . 'apikey=' . urlencode($account->api_key) . "&sender=" . $sender . "&data=" . json_encode($requestData));
 
@@ -198,15 +204,17 @@ class TextLocalService
      *
      * @param int $accountId
      * @param int $total
+     * @param Carbon $scheduledDateTime
      *
      * @return SmsBatchLog
      */
-    private function registerBulkSmsBatch(int $accountId, int $total): SmsBatchLog
+    private function registerBulkSmsBatch(int $accountId, int $total, Carbon $scheduledDateTime = null): SmsBatchLog
     {
         return $this->smsBatchLogRepository->store(collect([
             "account_id" => $accountId,
             "total" => $total,
-            "status" => Constants::$PENDING
+            "status" => Constants::$PENDING,
+            "scheduled_datetime" => $scheduledDateTime
         ])->toArray());
     }
 

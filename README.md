@@ -83,6 +83,11 @@ $sms = new TextLocalSms($mobileNumbers, 'SENDER_NAME', $message);
 TextLocal::sendSMS($sms, 1));
 ```
 
+```php
+// For Scheduling the message
+TextLocal::sendSMS($sms, 1, now()->addMinutes(30));
+```
+
 #### TextLocalMessage Parameters
 
 | Parameter     | Type   | Description                                     |
@@ -100,10 +105,11 @@ TextLocal::sendSMS($sms, 1));
 
 #### sendSMS Parameters
 
-| Parameter  | Type         | Description                                           |
-| ---------- | ------------ | ----------------------------------------------------- |
-| $sms       | TextLocalSms | SMS Object                                            |
-| $accountId | int          | Account Id registered in the textlocal_accounts table |
+| Parameter          | Type         | Description                                           |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| $sms               | TextLocalSms | SMS Object                                            |
+| $accountId         | int          | Account Id registered in the textlocal_accounts table |
+| $scheduledDateTime | Carbon       | Schedule date/time for your message                   |
 
 ### Send Bulk SMS
 
@@ -116,12 +122,17 @@ $message1 = 'FIRST MESSAGE';
 $message2 = 'SECOND MESSAGE';
 
 $messages = collect([]);
-$messages->push(new TextLocalMessage("9999955555", $message, 'UNIQUE_REFERENCE_ID'));
-$messages->push(new TextLocalMessage("9999944444", $message2, 'UNIQUE_REFERENCE_ID'));
+$messages->push(new TextLocalMessage("9999955555", 'UNIQUE_REFERENCE_ID', $message));
+$messages->push(new TextLocalMessage("9999944444", 'UNIQUE_REFERENCE_ID', $message2));
 
 $bulk = new TextLocalBulkSms($messages, 'SENDER');
 
 TextLocal::sendBulkSms($bulk, 1);
+```
+
+```php
+// For Scheduling the message
+TextLocal::sendBulkSms($bulk, 1, now()->addMinutes(30));
 ```
 
 #### TextLocalMessage Parameters
@@ -141,7 +152,8 @@ TextLocal::sendBulkSms($bulk, 1);
 
 #### sendBulkSms Parameters
 
-| Parameter  | Type         | Description                                           |
-| ---------- | ------------ | ----------------------------------------------------- |
-| $sms       | TextLocalSms | SMS Object                                            |
-| $accountId | int          | Account Id registered in the textlocal_accounts table |
+| Parameter          | Type         | Description                                           |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| $sms               | TextLocalSms | SMS Object                                            |
+| $accountId         | int          | Account Id registered in the textlocal_accounts table |
+| $scheduledDateTime | Carbon       | Schedule date/time for your message                   |
